@@ -109,8 +109,56 @@ export default function HomePage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/10 py-8 text-center text-neutral-500 text-sm">
-        © {new Date().getFullYear()} Nego. Todos los derechos reservados.
+      <footer className="border-t border-white/10 bg-neutral-950">
+        <div className="max-w-7xl mx-auto px-6 py-16">
+
+          {/* Links legales */}
+          <div className="grid md:grid-cols-3 gap-8 mb-12 text-left">
+
+            <a
+              href="https://panel.nego.ink/legal/privacidad"
+              className="group p-6 rounded-xl bg-neutral-900 border border-white/5 hover:border-green-500/40 transition-all duration-300 hover:bg-neutral-800"
+            >
+              <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-green-400 transition">
+                Política de Privacidad
+              </h3>
+              <p className="text-neutral-400 text-sm">
+                Cómo protegemos y tratamos tus datos.
+              </p>
+            </a>
+
+            <a
+              href="https://panel.nego.ink/legal/terminos"
+              className="group p-6 rounded-xl bg-neutral-900 border border-white/5 hover:border-green-500/40 transition-all duration-300 hover:bg-neutral-800"
+            >
+              <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-green-400 transition">
+                Términos y Condiciones
+              </h3>
+              <p className="text-neutral-400 text-sm">
+                Reglas y condiciones de uso de la plataforma.
+              </p>
+            </a>
+
+            <a
+              href="https://panel.nego.ink/legal/pagos"
+              className="group p-6 rounded-xl bg-neutral-900 border border-white/5 hover:border-green-500/40 transition-all duration-300 hover:bg-neutral-800"
+            >
+              <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-green-400 transition">
+                Política de Pagos
+              </h3>
+              <p className="text-neutral-400 text-sm">
+                Información sobre planes y facturación.
+              </p>
+            </a>
+
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-white/10 pt-6 text-center text-neutral-500 text-sm">
+            © {new Date().getFullYear()} Nego. Todos los derechos reservados.
+          </div>
+
+        </div>
       </footer>
 
     </main>
