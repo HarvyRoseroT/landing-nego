@@ -4,4 +4,6 @@ export interface Producto {
   descripcion?: string | null;
   precio?: number | null;
   imagen_url?: string | null;
+  marca?: string | null;
+  talla?: string | null;
 }

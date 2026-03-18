@@ -4,9 +4,22 @@ import type { Producto } from "@/types/producto";
 interface Props {
   nombre: string;
   productos: Producto[];
+  canAdd?: boolean;
+  getQuantity?: (productoId: number) => number;
+  onAdd?: (producto: Producto) => void;
+  onIncrease?: (productoId: number) => void;
+  onDecrease?: (productoId: number) => void;
 }
 
-export default function SeccionSection({ nombre, productos }: Props) {
+export default function SeccionSection({
+  nombre,
+  productos,
+  canAdd = false,
+  getQuantity,
+  onAdd,
+  onIncrease,
+  onDecrease,
+}: Props) {
   if (!productos.length) return null;
 
   return (
@@ -32,7 +45,15 @@ export default function SeccionSection({ nombre, productos }: Props) {
       />
 
       {productos.map((p) => (
-        <ProductoCard key={p.id} producto={p} />
+        <ProductoCard
+          key={p.id}
+          producto={p}
+          canAdd={canAdd}
+          quantity={getQuantity?.(p.id) ?? 0}
+          onAdd={onAdd}
+          onIncrease={onIncrease}
+          onDecrease={onDecrease}
+        />
       ))}
     </section>
   );

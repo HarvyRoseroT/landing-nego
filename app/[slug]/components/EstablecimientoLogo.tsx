@@ -9,8 +9,6 @@ interface Props {
 export default function EstablecimientoLogo({ logoUrl }: Props) {
   const [error, setError] = useState(false);
 
-  const primaryColor = "#1B5E3C";
-
   return (
     <div
       style={{

@@ -10,6 +10,7 @@ interface Props {
     pais?: string;
     telefono_contacto?: string;
     domicilio_activo?: boolean;
+    tipo_establecimiento?: string;
   };
 }
 
@@ -21,7 +22,10 @@ export default function EstablecimientoInfoCard({ data }: Props) {
     pais,
     telefono_contacto,
     domicilio_activo,
+    tipo_establecimiento,
   } = data;
+
+  const isClothing = tipo_establecimiento === "clothing_store";
 
   return (
     <div
@@ -59,7 +63,9 @@ export default function EstablecimientoInfoCard({ data }: Props) {
         />
       )}
 
-      {domicilio_activo && telefono_contacto && (
+      {telefono_contacto && <InfoRow icon="TE" text={telefono_contacto} />}
+
+      {!isClothing && domicilio_activo && (
         <div
           style={{
             marginTop: 12,
@@ -86,7 +92,7 @@ export default function EstablecimientoInfoCard({ data }: Props) {
               marginTop: 4,
             }}
           >
-            {telefono_contacto}
+            Pide y confirma por WhatsApp
           </div>
         </div>
       )}

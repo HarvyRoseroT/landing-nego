@@ -5,6 +5,8 @@ export interface Producto {
   precio?: number | null;
   imagen_url?: string | null;
   orden?: number;
+  marca?: string | null;
+  talla?: string | null;
 }
 
 export interface Seccion {

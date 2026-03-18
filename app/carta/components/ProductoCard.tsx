@@ -1,24 +1,31 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useState } from "react";
+import { formatMoney } from "@/lib/format";
 import type { Producto } from "@/types/producto";
 import ImageViewer from "./ImageViewer";
 
 interface Props {
   producto: Producto;
+  canAdd?: boolean;
+  quantity?: number;
+  onAdd?: (producto: Producto) => void;
+  onIncrease?: (productoId: number) => void;
+  onDecrease?: (productoId: number) => void;
 }
 
-export default function ProductoCard({ producto }: Props) {
+export default function ProductoCard({
+  producto,
+  canAdd = false,
+  quantity = 0,
+  onAdd,
+  onIncrease,
+  onDecrease,
+}: Props) {
   const [expanded, setExpanded] = useState(false);
   const [showImage, setShowImage] = useState(false);
-
-  const formatter = new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  });
-
-  const precio = formatter.format(Number(producto.precio ?? 0));
+  const precio = formatMoney(Number(producto.precio ?? 0));
 
   return (
     <>
@@ -33,7 +40,6 @@ export default function ProductoCard({ producto }: Props) {
         }}
       >
         <div style={{ display: "flex", gap: 14 }}>
-          {/* IMAGEN */}
           <div
             onClick={() => producto.imagen_url && setShowImage(true)}
             style={{
@@ -68,12 +74,11 @@ export default function ProductoCard({ producto }: Props) {
                   fontSize: 22,
                 }}
               >
-                🖼️
+                IMG
               </div>
             )}
           </div>
 
-          {/* INFO */}
           <div style={{ flex: 1 }}>
             <h3
               style={{
@@ -89,6 +94,7 @@ export default function ProductoCard({ producto }: Props) {
               <p
                 style={{
                   marginTop: 6,
+                  marginBottom: 0,
                   fontSize: 14,
                   lineHeight: 1.25,
                   color: "rgba(0,0,0,.75)",
@@ -102,16 +108,28 @@ export default function ProductoCard({ producto }: Props) {
               </p>
             )}
 
-            {/* FOOTER */}
+            {(producto.marca || producto.talla) && (
+              <p
+                style={{
+                  marginTop: 8,
+                  marginBottom: 0,
+                  fontSize: 13,
+                  color: "rgba(0,0,0,.58)",
+                }}
+              >
+                {[producto.marca, producto.talla].filter(Boolean).join(" · ")}
+              </p>
+            )}
+
             <div
               style={{
                 marginTop: 10,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                gap: 12,
               }}
             >
-              {/* PRECIO A LA DERECHA */}
               <div
                 style={{
                   padding: "6px 12px",
@@ -126,32 +144,58 @@ export default function ProductoCard({ producto }: Props) {
                 {precio}
               </div>
 
-              {/* EXPAND */}
-              {producto.descripcion &&
-                producto.descripcion.length > 100 && (
+              {canAdd ? (
+                quantity > 0 ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <button onClick={() => onDecrease?.(producto.id)} style={stepperStyle}>
+                      -
+                    </button>
+                    <span style={{ minWidth: 18, textAlign: "center", fontWeight: 800 }}>
+                      {quantity}
+                    </span>
+                    <button onClick={() => onIncrease?.(producto.id)} style={stepperStyle}>
+                      +
+                    </button>
+                  </div>
+                ) : (
                   <button
-                    onClick={() => setExpanded(!expanded)}
+                    onClick={() => onAdd?.(producto)}
                     style={{
-                      background: "none",
                       border: "none",
-                      color: "#1B5E3C",
+                      background: "#1B5E3C",
+                      color: "#fff",
                       cursor: "pointer",
-                      fontSize: 18,
-                      marginLeft: 12,
+                      fontSize: 13,
+                      fontWeight: 800,
+                      padding: "10px 14px",
+                      borderRadius: 999,
                     }}
-                    aria-label={
-                      expanded ? "Contraer descripción" : "Expandir descripción"
-                    }
+                    aria-label="Agregar producto"
                   >
-                    {expanded ? "▲" : "▼"}
+                    Agregar
                   </button>
-                )}
+                )
+              ) : producto.descripcion && producto.descripcion.length > 100 ? (
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#1B5E3C",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    fontWeight: 700,
+                  }}
+                  aria-label={expanded ? "Contraer descripcion" : "Expandir descripcion"}
+                >
+                  {expanded ? "Ver menos" : "Ver mas"}
+                </button>
+              ) : null}
             </div>
           </div>
         </div>
       </div>
 
-      {/* FULLSCREEN IMAGE */}
       {showImage && producto.imagen_url && (
         <ImageViewer
           imageUrl={producto.imagen_url}
@@ -161,3 +205,15 @@ export default function ProductoCard({ producto }: Props) {
     </>
   );
 }
+
+const stepperStyle: CSSProperties = {
+  width: 32,
+  height: 32,
+  borderRadius: 10,
+  border: "none",
+  background: "rgba(27,94,60,.12)",
+  color: "#1B5E3C",
+  fontWeight: 800,
+  fontSize: 18,
+  cursor: "pointer",
+};

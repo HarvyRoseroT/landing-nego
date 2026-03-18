@@ -7,9 +7,13 @@ interface Carta {
 
 interface Props {
   cartas: Carta[];
+  queryString?: string;
 }
 
-export default function EstablecimientoCartasSection({ cartas }: Props) {
+export default function EstablecimientoCartasSection({
+  cartas,
+  queryString,
+}: Props) {
   if (!cartas.length) {
     return (
       <div
@@ -32,7 +36,7 @@ export default function EstablecimientoCartasSection({ cartas }: Props) {
       {cartas.map((carta) => (
         <Link
           key={carta.id}
-          href={`/carta/${carta.id}`}
+          href={queryString ? `/carta/${carta.id}?${queryString}` : `/carta/${carta.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <div
