@@ -4,13 +4,13 @@ import ExpandableText from "./ExpandableText";
 
 interface Props {
   data: {
-    descripcion?: string;
-    direccion?: string;
-    ciudad?: string;
-    pais?: string;
-    telefono_contacto?: string;
+    descripcion?: string | null;
+    direccion?: string | null;
+    ciudad?: string | null;
+    pais?: string | null;
+    telefono_contacto?: string | null;
     domicilio_activo?: boolean;
-    tipo_establecimiento?: string;
+    tipo_establecimiento?: string | null;
   };
 }
 
