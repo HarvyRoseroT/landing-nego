@@ -30,6 +30,7 @@ export default function HomeExperience() {
       return;
     }
 
+    const currentLocation = location;
     let active = true;
 
     async function loadNearby() {
@@ -37,7 +38,10 @@ export default function HomeExperience() {
       setItemsError(null);
 
       try {
-        const response = await getEstablecimientosCercanos(location.lat, location.lng);
+        const response = await getEstablecimientosCercanos(
+          currentLocation.lat,
+          currentLocation.lng
+        );
         if (!active) {
           return;
         }
