@@ -31,6 +31,7 @@ export default function ImageViewer({ imageUrl, onClose }: Props) {
 
       <button
         onClick={onClose}
+        aria-label="Cerrar imagen"
         style={{
           position: "absolute",
           top: 20,
@@ -41,11 +42,16 @@ export default function ImageViewer({ imageUrl, onClose }: Props) {
           background: "rgba(0,0,0,.6)",
           border: "none",
           color: "#fff",
-          fontSize: 20,
+          fontSize: 16,
+          fontWeight: 800,
           cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          lineHeight: 1,
         }}
       >
-        ✕
+        X
       </button>
     </div>
   );

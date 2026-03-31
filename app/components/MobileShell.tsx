@@ -24,6 +24,8 @@ export default function MobileShell({
           maxWidth: 430,
           backgroundColor,
           minHeight: "100vh",
+          color: "#111827",
+          colorScheme: "light",
         }}
       >
         {children}

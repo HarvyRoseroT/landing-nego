@@ -26,9 +26,11 @@ export default function SeccionSection({
     <section style={{ marginBottom: 32 }}>
       <h2
         style={{
+          margin: 0,
           fontSize: 18,
           fontWeight: 900,
           letterSpacing: 1.2,
+          color: "#111827",
         }}
       >
         {nombre.toUpperCase()}

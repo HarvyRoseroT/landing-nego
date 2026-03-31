@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import CartaHeader from "./CartaHeader";
 import PedidoSheet from "./PedidoSheet";
 import SeccionSection from "./SeccionSection";
 import { usePersistentOrder } from "@/hooks/usePersistentOrder";
+import { parseOrderRouteContext } from "@/lib/orderContext";
 import type { CartaDetalle, Seccion } from "@/types/carta";
 
 interface Props {
@@ -18,22 +19,15 @@ export default function CartaClientPage({
   secciones,
   searchParams,
 }: Props) {
+  const context = parseOrderRouteContext(searchParams);
   const [sheetOpen, setSheetOpen] = useState(
     getStringParam(searchParams.openPedido) === "true"
   );
-  const establecimientoId = getNumberParam(searchParams.establecimientoId);
-  const establecimientoNombre =
-    getStringParam(searchParams.establecimientoNombre) ?? "establecimiento";
-  const telefono = getStringParam(searchParams.telefono);
-  const tipo = getStringParam(searchParams.tipo);
-  const domicilioActivo = getStringParam(searchParams.domicilio) === "true";
-  const isClothing = tipo === "clothing_store";
-  const canOrder = Boolean(establecimientoId && domicilioActivo && !isClothing);
-  const pedido = usePersistentOrder(establecimientoId ?? undefined);
-  const stickyLabel = useMemo(
-    () => `Mi pedido (${pedido.totalItems})`,
-    [pedido.totalItems]
+  const isClothing = context.tipo === "clothing_store";
+  const canOrder = Boolean(
+    context.establecimientoId && context.domicilioActivo && !isClothing
   );
+  const pedido = usePersistentOrder(context.establecimientoId ?? undefined);
 
   return (
     <>
@@ -64,7 +58,7 @@ export default function CartaClientPage({
             >
               Catalogo visual. Esta tienda de ropa no permite pedidos desde la web.
             </div>
-          ) : !domicilioActivo ? (
+          ) : !context.domicilioActivo ? (
             <div
               style={{
                 marginBottom: 20,
@@ -115,14 +109,14 @@ export default function CartaClientPage({
               cursor: "pointer",
             }}
           >
-            {stickyLabel}
+            {`Mi pedido (${pedido.totalItems})`}
           </button>
 
           <PedidoSheet
             open={sheetOpen}
             onClose={() => setSheetOpen(false)}
-            establecimientoNombre={establecimientoNombre}
-            telefono={telefono}
+            establecimientoNombre={context.establecimientoNombre}
+            telefono={context.telefono}
             items={pedido.items}
             total={pedido.total}
             onIncrease={pedido.increase}
@@ -137,13 +131,4 @@ export default function CartaClientPage({
 
 function getStringParam(value: string | string[] | undefined) {
   return typeof value === "string" ? value : null;
-}
-
-function getNumberParam(value: string | string[] | undefined) {
-  if (typeof value !== "string" || !value.trim()) {
-    return null;
-  }
-
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
 }

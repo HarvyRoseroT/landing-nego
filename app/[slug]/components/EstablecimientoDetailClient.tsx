@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { useState } from "react";
 import PedidoSheet from "@/app/carta/components/PedidoSheet";
 import { usePersistentOrder } from "@/hooks/usePersistentOrder";
+import { buildGeneralCartaQuery } from "@/lib/orderContext";
 import EstablecimientoInfoCard from "./EstablecimientoInfoCard";
 import EstablecimientoCartasSection from "./EstablecimientoCartasSection";
 import type { EstablecimientoDetalle } from "@/types/establecimiento";
@@ -18,13 +19,13 @@ export default function EstablecimientoDetailClient({ establecimiento }: Props) 
   const [sheetOpen, setSheetOpen] = useState(false);
   const pedido = usePersistentOrder(establecimiento.id);
 
-  const cartaQuery = new URLSearchParams({
-    establecimientoId: String(establecimiento.id),
+  const cartaQuery = buildGeneralCartaQuery({
+    establecimientoId: establecimiento.id,
     establecimientoNombre: establecimiento.nombre,
-    telefono: establecimiento.telefono_contacto ?? "",
+    telefono: establecimiento.telefono_contacto,
     tipo: establecimiento.tipo_establecimiento,
-    domicilio: String(establecimiento.domicilio_activo),
-  }).toString();
+    domicilioActivo: establecimiento.domicilio_activo,
+  });
 
   return (
     <section style={{ padding: 16 }}>

@@ -85,6 +85,7 @@ export default function ProductoCard({
                 margin: 0,
                 fontSize: 16,
                 fontWeight: 800,
+                color: "#111827",
               }}
             >
               {producto.nombre}

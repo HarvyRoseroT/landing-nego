@@ -13,6 +13,7 @@ export interface UserLocation {
 export interface CartaResumen {
   id: number;
   nombre: string;
+  orden?: number | null;
 }
 
 export interface EstablecimientoBase {

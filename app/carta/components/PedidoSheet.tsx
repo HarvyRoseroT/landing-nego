@@ -100,11 +100,19 @@ export default function PedidoSheet({
               borderRadius: "50%",
               border: "none",
               background: "rgba(0,0,0,.08)",
-              fontSize: 18,
+              color: "#111827",
+              fontSize: 16,
+              fontWeight: 800,
               cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              lineHeight: 1,
+              flexShrink: 0,
             }}
+            aria-label="Cerrar"
           >
-            x
+            X
           </button>
         </div>
 

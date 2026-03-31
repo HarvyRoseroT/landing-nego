@@ -1,15 +1,15 @@
 import type { PedidoProducto } from "@/types/pedido";
 
-function getOrderKey(establecimientoId: number) {
-  return `nego-order-${establecimientoId}`;
+function getOrderKey(scopeKey: string) {
+  return `nego-order-${scopeKey}`;
 }
 
-export function readPedido(establecimientoId: number): PedidoProducto[] {
+export function readPedido(scopeKey: string): PedidoProducto[] {
   if (typeof window === "undefined") {
     return [];
   }
 
-  const raw = window.localStorage.getItem(getOrderKey(establecimientoId));
+  const raw = window.localStorage.getItem(getOrderKey(scopeKey));
 
   if (!raw) {
     return [];
@@ -24,12 +24,20 @@ export function readPedido(establecimientoId: number): PedidoProducto[] {
 }
 
 export function savePedido(
-  establecimientoId: number,
+  scopeKey: string,
   items: PedidoProducto[]
 ) {
   if (typeof window === "undefined") {
     return;
   }
 
-  window.localStorage.setItem(getOrderKey(establecimientoId), JSON.stringify(items));
+  window.localStorage.setItem(getOrderKey(scopeKey), JSON.stringify(items));
+}
+
+export function clearPedido(scopeKey: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(getOrderKey(scopeKey));
 }

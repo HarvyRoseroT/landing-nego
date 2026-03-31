@@ -5,6 +5,11 @@ import type {
   EstablecimientoCercano,
   EstablecimientoDetalle,
 } from "@/types/establecimiento";
+import type {
+  MesaPedidoContext,
+  PedidoMesaPayload,
+  PedidoMesaResponse,
+} from "@/types/mesa";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,27 +81,36 @@ function getTipoEstablecimiento(value: unknown): EstablishmentType {
   return fallback;
 }
 
+function isNonNullable<T>(value: T | null): value is T {
+  return value !== null;
+}
+
 function getCartas(value: unknown): CartaResumen[] {
   if (!Array.isArray(value)) {
     return [];
   }
 
   return value
-    .map((item) => {
+    .map((item): CartaResumen | null => {
       if (!item || typeof item !== "object") {
         return null;
       }
 
       const id = getNumber((item as { id?: unknown }).id);
       const nombre = getString((item as { nombre?: unknown }).nombre);
+      const orden = getNumber((item as { orden?: unknown }).orden);
 
       if (!id || !nombre) {
         return null;
       }
 
-      return { id, nombre };
+      return {
+        id,
+        nombre,
+        ...(orden !== null ? { orden } : {}),
+      };
     })
-    .filter((item): item is CartaResumen => Boolean(item));
+    .filter(isNonNullable);
 }
 
 function normalizeEstablecimientoBase(raw: Record<string, unknown>) {
@@ -146,10 +160,22 @@ function normalizeCercano(raw: Record<string, unknown>): EstablecimientoCercano 
 }
 
 async function fetchJson<T>(path: string): Promise<T | null> {
+  return requestJson<T>(path, { method: "GET" });
+}
+
+async function requestJson<T>(
+  path: string,
+  init: RequestInit
+): Promise<T | null> {
   ensureApiUrl();
 
   const res = await fetch(`${API_URL}${path}`, {
     cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+    ...init,
   });
 
   if (res.status === 404) {
@@ -228,4 +254,90 @@ export async function getEstablecimientoDetalle(
 
 export async function getCartaDetalle(cartaId: string | number) {
   return fetchJson<CartaDetalle>(`/cartas/${cartaId}`);
+}
+
+export async function getAppCartaDetalle(cartaId: string | number) {
+  return fetchJson<CartaDetalle>(`/app/cartas/${cartaId}`);
+}
+
+function normalizeMesaContext(raw: Record<string, unknown>): MesaPedidoContext | null {
+  const mesaRaw =
+    raw.mesa && typeof raw.mesa === "object"
+      ? (raw.mesa as Record<string, unknown>)
+      : null;
+  const establecimientoRaw =
+    raw.establecimiento && typeof raw.establecimiento === "object"
+      ? (raw.establecimiento as Record<string, unknown>)
+      : null;
+  const planoRaw =
+    raw.plano && typeof raw.plano === "object"
+      ? (raw.plano as Record<string, unknown>)
+      : null;
+
+  if (!mesaRaw || !establecimientoRaw) {
+    return null;
+  }
+
+  const mesaId = getNumber(mesaRaw.id);
+  const mesaNombre = getString(mesaRaw.nombre);
+  const establecimientoId = getNumber(establecimientoRaw.id);
+  const establecimientoNombre = getString(establecimientoRaw.nombre);
+  const establecimientoSlug = getString(establecimientoRaw.slug);
+
+  if (
+    !mesaId ||
+    !mesaNombre ||
+    !establecimientoId ||
+    !establecimientoNombre ||
+    !establecimientoSlug
+  ) {
+    return null;
+  }
+
+  return {
+    mesa: {
+      id: mesaId,
+      nombre: mesaNombre,
+      capacidad: getNumber(mesaRaw.capacidad),
+    },
+    plano: planoRaw
+      ? {
+          id: getNumber(planoRaw.id) ?? 0,
+          nombre: getString(planoRaw.nombre) ?? "",
+        }
+      : null,
+    establecimiento: {
+      id: establecimientoId,
+      nombre: establecimientoNombre,
+      slug: establecimientoSlug,
+      descripcion: getString(establecimientoRaw.descripcion),
+      logo_url: getString(establecimientoRaw.logo_url),
+      tipo_establecimiento: getTipoEstablecimiento(
+        establecimientoRaw.tipo_establecimiento
+      ),
+    },
+    cartas: getCartas(raw.cartas),
+  };
+}
+
+export async function getMesaPedidoContext(
+  mesaId: string | number
+): Promise<MesaPedidoContext | null> {
+  const payload = await fetchJson<Record<string, unknown>>(`/app/mesas/${mesaId}`);
+
+  if (!payload) {
+    return null;
+  }
+
+  return normalizeMesaContext(payload);
+}
+
+export async function createMesaPedido(
+  mesaId: string | number,
+  body: PedidoMesaPayload
+): Promise<PedidoMesaResponse | null> {
+  return requestJson<PedidoMesaResponse>(`/app/mesas/${mesaId}/pedidos`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }

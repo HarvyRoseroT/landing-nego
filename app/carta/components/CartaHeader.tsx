@@ -20,7 +20,6 @@ export default function CartaHeader({ titulo }: Props) {
         gap: 12,
       }}
     >
-      {/* BOTÓN VOLVER */}
       <button
         onClick={() => router.back()}
         aria-label="Volver"
@@ -37,12 +36,13 @@ export default function CartaHeader({ titulo }: Props) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          lineHeight: 1,
+          flexShrink: 0,
         }}
       >
-        ←
+        {"<"}
       </button>
 
-      {/* TÍTULO */}
       <h1
         style={{
           margin: 0,
@@ -50,9 +50,12 @@ export default function CartaHeader({ titulo }: Props) {
           fontWeight: 700,
           letterSpacing: 0.6,
           color: "#1B5E3C",
+          lineHeight: 1.2,
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
+          flex: 1,
+          minWidth: 0,
         }}
       >
         {titulo}

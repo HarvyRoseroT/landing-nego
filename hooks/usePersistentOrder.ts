@@ -1,22 +1,33 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { readPedido, savePedido } from "@/lib/pedidoStorage";
+import { clearPedido, readPedido, savePedido } from "@/lib/pedidoStorage";
 import type { PedidoProducto } from "@/types/pedido";
 import type { Producto } from "@/types/producto";
 
-export function usePersistentOrder(establecimientoId?: number) {
+interface UsePersistentOrderOptions {
+  establecimientoId?: number;
+  scopeKey?: string;
+}
+
+export function usePersistentOrder(options?: number | UsePersistentOrderOptions) {
+  const establecimientoId =
+    typeof options === "number" ? options : options?.establecimientoId;
+  const storageScopeKey =
+    typeof options === "number"
+      ? String(options)
+      : options?.scopeKey ?? (establecimientoId ? String(establecimientoId) : undefined);
   const [items, setItems] = useState<PedidoProducto[]>(() =>
-    establecimientoId ? readPedido(establecimientoId) : []
+    storageScopeKey ? readPedido(storageScopeKey) : []
   );
 
   useEffect(() => {
-    if (!establecimientoId) {
+    if (!storageScopeKey) {
       return;
     }
 
-    savePedido(establecimientoId, items);
-  }, [establecimientoId, items]);
+    savePedido(storageScopeKey, items);
+  }, [storageScopeKey, items]);
 
   const total = useMemo(
     () => items.reduce((sum, item) => sum + item.precio * item.cantidad, 0),
@@ -86,7 +97,17 @@ export function usePersistentOrder(establecimientoId?: number) {
     return items.find((item) => item.productoId === productoId)?.cantidad ?? 0;
   }
 
+  function clear() {
+    if (storageScopeKey) {
+      clearPedido(storageScopeKey);
+    }
+
+    setItems([]);
+  }
+
   return {
+    establecimientoId,
+    scopeKey: storageScopeKey,
     items,
     total,
     totalItems,
@@ -95,5 +116,6 @@ export function usePersistentOrder(establecimientoId?: number) {
     decrease,
     remove,
     getQuantity,
+    clear,
   };
 }

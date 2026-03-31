@@ -6,4 +6,5 @@ export interface PedidoProducto {
   imagenUrl?: string | null;
   marca?: string | null;
   talla?: string | null;
+  notas?: string | null;
 }
