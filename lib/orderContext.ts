@@ -1,4 +1,4 @@
-export type OrderFlowType = "general";
+export type OrderFlowType = "general" | "qr";
 
 export interface OrderRouteContext {
   flow: OrderFlowType;
@@ -17,16 +17,20 @@ type SearchParamsInput = Record<string, SearchValue>;
 export function parseOrderRouteContext(
   searchParams: SearchParamsInput
 ): OrderRouteContext {
+  const mesaId = getNumberParam(searchParams.mesaId);
+  const isQrFlow = mesaId !== null;
+
   return {
-    flow: "general",
+    flow: isQrFlow ? "qr" : "general",
     establecimientoId: getNumberParam(searchParams.establecimientoId),
     establecimientoNombre:
       getStringParam(searchParams.establecimientoNombre) ?? "establecimiento",
     telefono: getStringParam(searchParams.telefono),
     tipo: getStringParam(searchParams.tipo),
-    domicilioActivo: getStringParam(searchParams.domicilio) === "true",
-    mesaId: null,
-    mesaNombre: null,
+    domicilioActivo:
+      !isQrFlow && getStringParam(searchParams.domicilio) === "true",
+    mesaId,
+    mesaNombre: getStringParam(searchParams.mesaNombre),
   };
 }
 

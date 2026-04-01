@@ -25,7 +25,10 @@ export default function CartaClientPage({
   );
   const isClothing = context.tipo === "clothing_store";
   const canOrder = Boolean(
-    context.establecimientoId && context.domicilioActivo && !isClothing
+    context.flow === "general" &&
+      context.establecimientoId &&
+      context.domicilioActivo &&
+      !isClothing
   );
   const pedido = usePersistentOrder(context.establecimientoId ?? undefined);
 
@@ -57,6 +60,20 @@ export default function CartaClientPage({
               }}
             >
               Catalogo visual. Esta tienda de ropa no permite pedidos desde la web.
+            </div>
+          ) : context.flow === "qr" ? (
+            <div
+              style={{
+                marginBottom: 20,
+                borderRadius: 18,
+                background: "#fff",
+                padding: 16,
+                boxShadow: "0 6px 14px rgba(0,0,0,.05)",
+                color: "#555",
+              }}
+            >
+              Esta carta fue abierta desde un QR. Aqui no se muestran pedidos a
+              domicilio.
             </div>
           ) : !context.domicilioActivo ? (
             <div
